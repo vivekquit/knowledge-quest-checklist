@@ -1,0 +1,138 @@
+import React, { useState, useRef, useEffect } from "react";
+import { Course, courses } from "@/data/courses";
+import { toast } from "sonner";
+
+const KnowledgeGraph = () => {
+  const [completedCourses, setCompletedCourses] = useState<Set<string>>(new Set());
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>(
+    Object.fromEntries(courses.map(course => [course.id, course.position]))
+  );
+
+  const handleNodeClick = (course: Course) => {
+    setSelectedCourse(course);
+    toast(course.title, {
+      description: course.description,
+    });
+  };
+
+  const toggleCompletion = (courseId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const newCompleted = new Set(completedCourses);
+    if (completedCourses.has(courseId)) {
+      newCompleted.delete(courseId);
+    } else {
+      newCompleted.add(courseId);
+    }
+    setCompletedCourses(newCompleted);
+  };
+
+  const handleMouseDown = (courseId: string) => {
+    setDragging(courseId);
+  };
+
+  const handleMouseMove = (event: React.MouseEvent) => {
+    if (!dragging || !svgRef.current) return;
+
+    const svg = svgRef.current;
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+    const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
+
+    setPositions(prev => ({
+      ...prev,
+      [dragging]: { x: svgPoint.x, y: svgPoint.y },
+    }));
+  };
+
+  const handleMouseUp = () => {
+    setDragging(null);
+  };
+
+  useEffect(() => {
+    console.log("Completed courses:", Array.from(completedCourses));
+  }, [completedCourses]);
+
+  const renderConnections = () => {
+    return courses.flatMap(course =>
+      course.dependencies.map(depId => {
+        const start = positions[depId];
+        const end = positions[course.id];
+        return (
+          <line
+            key={`${depId}-${course.id}`}
+            x1={start.x}
+            y1={start.y}
+            x2={end.x}
+            y2={end.y}
+            stroke="currentColor"
+            className="text-graph-line stroke-2 opacity-50"
+          />
+        );
+      })
+    );
+  };
+
+  return (
+    <div className="w-full h-[800px] bg-gray-50 rounded-lg shadow-inner relative overflow-hidden">
+      <svg
+        ref={svgRef}
+        className="w-full h-full"
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        {renderConnections()}
+        {courses.map(course => (
+          <g
+            key={course.id}
+            transform={`translate(${positions[course.id].x},${positions[course.id].y})`}
+            onClick={() => handleNodeClick(course)}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              handleMouseDown(course.id);
+            }}
+            className="cursor-pointer"
+          >
+            <circle
+              r="30"
+              className={`${
+                completedCourses.has(course.id)
+                  ? "fill-graph-completed"
+                  : "fill-graph-node"
+              } transition-colors duration-300 hover:fill-graph-hover`}
+            />
+            <text
+              className="text-xs fill-white font-medium"
+              textAnchor="middle"
+              dy="-5"
+            >
+              {course.title.split(" ")[0]}
+            </text>
+            <foreignObject
+              x="-12"
+              y="0"
+              width="24"
+              height="24"
+              className="overflow-visible"
+            >
+              <div className="flex justify-center items-center">
+                <input
+                  type="checkbox"
+                  checked={completedCourses.has(course.id)}
+                  onChange={(e) => toggleCompletion(course.id, e as any)}
+                  className="w-4 h-4 rounded border-white border-2 checked:bg-white checked:border-transparent focus:ring-0 focus:ring-offset-0"
+                />
+              </div>
+            </foreignObject>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+};
+
+export default KnowledgeGraph;
