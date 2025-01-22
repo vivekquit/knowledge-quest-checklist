@@ -10,12 +10,46 @@ const KnowledgeGraph = () => {
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>(
     Object.fromEntries(courses.map(course => [course.id, course.position]))
   );
+  const [progressPercentages, setProgressPercentages] = useState<Record<string, number>>(
+    Object.fromEntries(courses.map(course => [course.id, 0]))
+  );
+
+  useEffect(() => {
+    updateProgressPercentages();
+  }, [completedCourses]);
+
+  const updateProgressPercentages = () => {
+    const newPercentages: Record<string, number> = {};
+    
+    // Initialize all percentages to 0
+    courses.forEach(course => {
+      newPercentages[course.id] = 0;
+    });
+
+    // Calculate contributions from completed courses
+    completedCourses.forEach(completedId => {
+      const course = courses.find(c => c.id === completedId);
+      if (course?.certificationProgress?.contributesTo) {
+        Object.entries(course.certificationProgress.contributesTo).forEach(([targetId, contribution]) => {
+          newPercentages[targetId] = (newPercentages[targetId] || 0) + contribution;
+        });
+      }
+      // Set completed course to 100%
+      newPercentages[completedId] = 100;
+    });
+
+    setProgressPercentages(newPercentages);
+  };
 
   const handleNodeClick = (course: Course) => {
     setSelectedCourse(course);
-    const progressText = course.certificationProgress 
-      ? `Completing ${course.title} will help complete ${course.certificationProgress.percentage}% of ${course.certificationProgress.target}`
-      : course.description;
+    const currentProgress = progressPercentages[course.id];
+    const dependencies = course.dependencies.map(depId => {
+      const dep = courses.find(c => c.id === depId);
+      return dep?.title;
+    }).filter(Boolean).join(", ");
+    
+    const progressText = `Current Progress: ${Math.round(currentProgress)}%${dependencies ? `\nPrerequisites: ${dependencies}` : ''}`;
     
     toast(course.title, {
       description: progressText,
@@ -28,6 +62,20 @@ const KnowledgeGraph = () => {
     if (completedCourses.has(courseId)) {
       newCompleted.delete(courseId);
     } else {
+      // Check if dependencies are completed
+      const course = courses.find(c => c.id === courseId);
+      const missingDependencies = course?.dependencies.filter(depId => !completedCourses.has(depId));
+      
+      if (missingDependencies && missingDependencies.length > 0) {
+        const missingCourses = missingDependencies
+          .map(depId => courses.find(c => c.id === depId)?.title)
+          .filter(Boolean)
+          .join(", ");
+        
+        toast.error(`Complete prerequisites first: ${missingCourses}`);
+        return;
+      }
+      
       newCompleted.add(courseId);
     }
     setCompletedCourses(newCompleted);
@@ -113,15 +161,13 @@ const KnowledgeGraph = () => {
             >
               {course.title}
             </text>
-            {course.certificationProgress && (
-              <text
-                className="text-xs fill-gray-300"
-                textAnchor="middle"
-                dy="15"
-              >
-                {course.certificationProgress.percentage}%
-              </text>
-            )}
+            <text
+              className="text-xs fill-gray-300"
+              textAnchor="middle"
+              dy="15"
+            >
+              {Math.round(progressPercentages[course.id])}%
+            </text>
             <foreignObject
               x="-12"
               y="20"

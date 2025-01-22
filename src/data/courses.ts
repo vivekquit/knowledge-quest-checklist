@@ -7,6 +7,9 @@ export interface Course {
   certificationProgress?: {
     target: string;
     percentage: number;
+    contributesTo?: {
+      [key: string]: number; // courseId: contribution percentage
+    };
   };
 }
 
@@ -17,6 +20,15 @@ export const courses: Course[] = [
     description: "Certified Kubernetes Administrator - Core concepts and cluster management",
     dependencies: [],
     position: { x: 100, y: 100 },
+    certificationProgress: {
+      target: "CKA",
+      percentage: 100,
+      contributesTo: {
+        "ckad": 30,
+        "cks": 40,
+        "kcna": 25
+      }
+    }
   },
   {
     id: "ckad",
@@ -26,7 +38,10 @@ export const courses: Course[] = [
     position: { x: 300, y: 100 },
     certificationProgress: {
       target: "CKAD",
-      percentage: 72
+      percentage: 0,
+      contributesTo: {
+        "cks": 20
+      }
     }
   },
   {
@@ -37,7 +52,11 @@ export const courses: Course[] = [
     position: { x: 500, y: 100 },
     certificationProgress: {
       target: "KCNA",
-      percentage: 69
+      percentage: 0,
+      contributesTo: {
+        "cks": 10,
+        "kcsa": 20
+      }
     }
   },
   {
@@ -48,7 +67,10 @@ export const courses: Course[] = [
     position: { x: 700, y: 100 },
     certificationProgress: {
       target: "CKS",
-      percentage: 27
+      percentage: 0,
+      contributesTo: {
+        "kcsa": 40
+      }
     }
   },
   {
@@ -59,7 +81,7 @@ export const courses: Course[] = [
     position: { x: 900, y: 100 },
     certificationProgress: {
       target: "KCSA",
-      percentage: 40
+      percentage: 0
     }
   }
 ];
