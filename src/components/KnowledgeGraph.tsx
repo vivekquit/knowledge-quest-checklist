@@ -21,12 +21,10 @@ const KnowledgeGraph = () => {
   const updateProgressPercentages = () => {
     const newPercentages: Record<string, number> = {};
     
-    // Initialize all percentages to 0
     courses.forEach(course => {
       newPercentages[course.id] = 0;
     });
 
-    // Calculate contributions from completed courses
     completedCourses.forEach(completedId => {
       const course = courses.find(c => c.id === completedId);
       if (course?.certificationProgress?.contributesTo) {
@@ -34,7 +32,6 @@ const KnowledgeGraph = () => {
           newPercentages[targetId] = (newPercentages[targetId] || 0) + contribution;
         });
       }
-      // Set completed course to 100%
       newPercentages[completedId] = 100;
     });
 
@@ -49,10 +46,12 @@ const KnowledgeGraph = () => {
       return dep?.title;
     }).filter(Boolean).join(", ");
     
-    const progressText = `Current Progress: ${Math.round(currentProgress)}%${dependencies ? `\nPrerequisites: ${dependencies}` : ''}`;
+    const subtopicsList = course.subtopics.map(topic => `• ${topic}`).join("\n");
+    const progressText = `Current Progress: ${Math.round(currentProgress)}%\n\n${dependencies ? `Prerequisites: ${dependencies}\n\n` : ''}Topics covered:\n${subtopicsList}`;
     
     toast(course.title, {
       description: progressText,
+      duration: 5000,
     });
   };
 
@@ -62,7 +61,6 @@ const KnowledgeGraph = () => {
     if (completedCourses.has(courseId)) {
       newCompleted.delete(courseId);
     } else {
-      // Check if dependencies are completed
       const course = courses.find(c => c.id === courseId);
       const missingDependencies = course?.dependencies.filter(depId => !completedCourses.has(depId));
       
