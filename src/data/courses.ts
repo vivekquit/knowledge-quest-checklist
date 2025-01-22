@@ -4,42 +4,62 @@ export interface Course {
   description: string;
   dependencies: string[];
   position: { x: number; y: number };
+  certificationProgress?: {
+    target: string;
+    percentage: number;
+  };
 }
 
 export const courses: Course[] = [
   {
-    id: "k8s-intro",
-    title: "Kubernetes Basics",
-    description: "Introduction to Kubernetes and container orchestration",
+    id: "cka",
+    title: "CKA",
+    description: "Certified Kubernetes Administrator - Core concepts and cluster management",
     dependencies: [],
+    position: { x: 100, y: 100 },
+  },
+  {
+    id: "ckad",
+    title: "CKAD",
+    description: "Certified Kubernetes Application Developer",
+    dependencies: ["cka"],
     position: { x: 300, y: 100 },
+    certificationProgress: {
+      target: "CKAD",
+      percentage: 72
+    }
   },
   {
-    id: "pods",
-    title: "Pods & Containers",
-    description: "Working with Pods and Containers in Kubernetes",
-    dependencies: ["k8s-intro"],
-    position: { x: 200, y: 200 },
+    id: "kcna",
+    title: "KCNA",
+    description: "Kubernetes and Cloud Native Associate",
+    dependencies: ["cka"],
+    position: { x: 500, y: 100 },
+    certificationProgress: {
+      target: "KCNA",
+      percentage: 69
+    }
   },
   {
-    id: "deployments",
-    title: "Deployments",
-    description: "Managing application deployments in Kubernetes",
-    dependencies: ["pods"],
-    position: { x: 400, y: 200 },
+    id: "cks",
+    title: "CKS",
+    description: "Certified Kubernetes Security Specialist",
+    dependencies: ["cka"],
+    position: { x: 700, y: 100 },
+    certificationProgress: {
+      target: "CKS",
+      percentage: 27
+    }
   },
   {
-    id: "services",
-    title: "Services & Networking",
-    description: "Kubernetes networking and service discovery",
-    dependencies: ["pods"],
-    position: { x: 300, y: 300 },
-  },
-  {
-    id: "storage",
-    title: "Storage",
-    description: "Persistent storage in Kubernetes",
-    dependencies: ["pods"],
-    position: { x: 500, y: 300 },
-  },
+    id: "kcsa",
+    title: "KCSA",
+    description: "Kubernetes Cloud Security Associate",
+    dependencies: ["cks"],
+    position: { x: 900, y: 100 },
+    certificationProgress: {
+      target: "KCSA",
+      percentage: 40
+    }
+  }
 ];

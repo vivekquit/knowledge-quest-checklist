@@ -13,8 +13,12 @@ const KnowledgeGraph = () => {
 
   const handleNodeClick = (course: Course) => {
     setSelectedCourse(course);
+    const progressText = course.certificationProgress 
+      ? `Completing ${course.title} will help complete ${course.certificationProgress.percentage}% of ${course.certificationProgress.target}`
+      : course.description;
+    
     toast(course.title, {
-      description: course.description,
+      description: progressText,
     });
   };
 
@@ -52,10 +56,6 @@ const KnowledgeGraph = () => {
     setDragging(null);
   };
 
-  useEffect(() => {
-    console.log("Completed courses:", Array.from(completedCourses));
-  }, [completedCourses]);
-
   const renderConnections = () => {
     return courses.flatMap(course =>
       course.dependencies.map(depId => {
@@ -70,6 +70,7 @@ const KnowledgeGraph = () => {
             y2={end.y}
             stroke="currentColor"
             className="text-graph-line stroke-2 opacity-50"
+            strokeDasharray="4"
           />
         );
       })
@@ -77,7 +78,7 @@ const KnowledgeGraph = () => {
   };
 
   return (
-    <div className="w-full h-[800px] bg-gray-50 rounded-lg shadow-inner relative overflow-hidden">
+    <div className="w-full h-[800px] bg-black rounded-lg shadow-inner relative overflow-hidden">
       <svg
         ref={svgRef}
         className="w-full h-full"
@@ -98,23 +99,32 @@ const KnowledgeGraph = () => {
             className="cursor-pointer"
           >
             <circle
-              r="30"
+              r="40"
               className={`${
                 completedCourses.has(course.id)
-                  ? "fill-graph-completed"
-                  : "fill-graph-node"
-              } transition-colors duration-300 hover:fill-graph-hover`}
+                  ? "fill-blue-600"
+                  : "fill-blue-500"
+              } transition-colors duration-300 hover:fill-blue-400 stroke-2 stroke-blue-300`}
             />
             <text
-              className="text-xs fill-white font-medium"
+              className="text-lg fill-white font-bold"
               textAnchor="middle"
               dy="-5"
             >
-              {course.title.split(" ")[0]}
+              {course.title}
             </text>
+            {course.certificationProgress && (
+              <text
+                className="text-xs fill-gray-300"
+                textAnchor="middle"
+                dy="15"
+              >
+                {course.certificationProgress.percentage}%
+              </text>
+            )}
             <foreignObject
               x="-12"
-              y="0"
+              y="20"
               width="24"
               height="24"
               className="overflow-visible"
