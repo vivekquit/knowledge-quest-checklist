@@ -67,6 +67,12 @@ const KnowledgeGraph = () => {
     }
   };
 
+  const getAllSubtopics = (course: Course): string[] => {
+    return course.sections.flatMap(section => 
+      section.subtopics.map(topic => topic.title)
+    );
+  };
+
   const handleNodeClick = (course: Course) => {
     setSelectedCourse(course);
     const currentProgress = progressPercentages[course.id];
@@ -75,7 +81,7 @@ const KnowledgeGraph = () => {
       return dep?.title;
     }).filter(Boolean).join(", ");
     
-    const subtopicsList = course.subtopics.map(topic => `• ${topic}`).join("\n");
+    const subtopicsList = getAllSubtopics(course).map(topic => `• ${topic}`).join("\n");
     const progressText = `Current Progress: ${Math.round(currentProgress)}%\n\n${dependencies ? `Prerequisites: ${dependencies}\n\n` : ''}Topics covered:\n${subtopicsList}`;
     
     toast(course.title, {
