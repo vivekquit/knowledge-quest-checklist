@@ -1,10 +1,19 @@
+export interface SubTopic {
+  id: string;
+  title: string;
+  relatedTopics?: string[]; // IDs of related topics in other courses
+}
+
 export interface Course {
   id: string;
   title: string;
   description: string;
   dependencies: string[];
   position: { x: number; y: number };
-  subtopics: string[];
+  sections: {
+    title: string;
+    subtopics: SubTopic[];
+  }[];
   certificationProgress?: {
     target: string;
     percentage: number;
@@ -21,15 +30,34 @@ export const courses: Course[] = [
     description: "Certified Kubernetes Administrator - Core concepts and cluster management",
     dependencies: [],
     position: { x: 100, y: 100 },
-    subtopics: [
-      "Cluster Architecture",
-      "Workloads & Scheduling",
-      "Services & Networking",
-      "Storage",
-      "Troubleshooting",
-      "Cluster Maintenance",
-      "Logging & Monitoring",
-      "Security"
+    sections: [
+      {
+        title: "Core Concepts",
+        subtopics: [
+          { id: "k8s-arch", title: "Kubernetes Architecture", relatedTopics: ["kcna-k8s-arch"] },
+          { id: "docker-containerd", title: "Docker vs ContainerD", relatedTopics: ["ckad-docker", "kcna-docker"] },
+          { id: "etcd", title: "etcd" },
+          { id: "api-server", title: "API Server", relatedTopics: ["kcsa-api-server"] },
+          { id: "controller-manager", title: "Controller Manager", relatedTopics: ["kcsa-controller"] },
+          { id: "scheduler", title: "Scheduler", relatedTopics: ["kcsa-scheduler"] }
+        ]
+      },
+      {
+        title: "Workloads",
+        subtopics: [
+          { id: "kubelet", title: "Kubelet", relatedTopics: ["kcsa-kubelet"] },
+          { id: "kube-proxy", title: "Kube Proxy" },
+          { id: "k8s-extensions", title: "Kubernetes Extension Interfaces" }
+        ]
+      },
+      {
+        title: "Container Runtime",
+        subtopics: [
+          { id: "cri", title: "Container Runtime Interface (CRI)", relatedTopics: ["kcna-cri", "kcsa-cri"] },
+          { id: "csi", title: "Container Storage Interface (CSI)" },
+          { id: "pods", title: "Pods", relatedTopics: ["ckad-pods", "kcna-pods"] }
+        ]
+      }
     ],
     certificationProgress: {
       target: "CKA",
@@ -47,14 +75,14 @@ export const courses: Course[] = [
     description: "Certified Kubernetes Application Developer",
     dependencies: ["cka"],
     position: { x: 300, y: 100 },
-    subtopics: [
-      "Application Design",
-      "Application Deployment",
-      "Application Observability",
-      "Application Configuration",
-      "Services & Networking",
-      "Pod Design",
-      "State Persistence"
+    sections: [
+      {
+        title: "Application Design",
+        subtopics: [
+          { id: "app-design", title: "Application Design" },
+          { id: "app-deployment", title: "Application Deployment" }
+        ]
+      }
     ],
     certificationProgress: {
       target: "CKAD",
@@ -70,13 +98,13 @@ export const courses: Course[] = [
     description: "Kubernetes and Cloud Native Associate",
     dependencies: ["cka"],
     position: { x: 500, y: 100 },
-    subtopics: [
-      "Kubernetes Fundamentals",
-      "Container Orchestration",
-      "Cloud Native Architecture",
-      "Cloud Native Observability",
-      "Cloud Native Application Delivery",
-      "Cloud Native Security"
+    sections: [
+      {
+        title: "Kubernetes Fundamentals",
+        subtopics: [
+          { id: "k8s-fundamentals", title: "Kubernetes Fundamentals" }
+        ]
+      }
     ],
     certificationProgress: {
       target: "KCNA",
@@ -93,13 +121,13 @@ export const courses: Course[] = [
     description: "Certified Kubernetes Security Specialist",
     dependencies: ["cka"],
     position: { x: 700, y: 100 },
-    subtopics: [
-      "Cluster Setup",
-      "Cluster Hardening",
-      "System Hardening",
-      "Minimize Microservice Vulnerabilities",
-      "Supply Chain Security",
-      "Monitoring, Logging and Runtime Security"
+    sections: [
+      {
+        title: "Security",
+        subtopics: [
+          { id: "security-fundamentals", title: "Security Fundamentals" }
+        ]
+      }
     ],
     certificationProgress: {
       target: "CKS",
@@ -115,13 +143,13 @@ export const courses: Course[] = [
     description: "Kubernetes Cloud Security Associate",
     dependencies: ["cks"],
     position: { x: 900, y: 100 },
-    subtopics: [
-      "Cloud Security Fundamentals",
-      "Container Security",
-      "Kubernetes Security",
-      "Cloud Platform Security",
-      "Security Operations",
-      "Compliance and Governance"
+    sections: [
+      {
+        title: "Cloud Security",
+        subtopics: [
+          { id: "cloud-security-fundamentals", title: "Cloud Security Fundamentals" }
+        ]
+      }
     ],
     certificationProgress: {
       target: "KCSA",
