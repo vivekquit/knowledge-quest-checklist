@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Course, SubTopic } from "@/data/courses";
+import { Course, SubTopic, topicRelationships } from "@/data/courses";
 import { courses } from "@/data/courses";
 import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
@@ -16,6 +16,45 @@ const KnowledgeGraph = () => {
   const [progressPercentages, setProgressPercentages] = useState<Record<string, number>>(
     Object.fromEntries(courses.map(course => [course.id, 0]))
   );
+
+  const [relatedLines, setRelatedLines] = useState<Array<{
+    from: { x: number; y: number };
+    to: { x: number; y: number };
+    color: string;
+  }>>([]);
+
+  useEffect(() => {
+    // Update related lines when topics are selected
+    const newLines: Array<{ from: { x: number; y: number }; to: { x: number; y: number }; color: string }> = [];
+    
+    selectedTopics.forEach(topicId => {
+      const relatedTopicIds = topicRelationships[topicId] || [];
+      relatedTopicIds.forEach(relatedId => {
+        // Find courses containing these topics
+        const sourceCourse = findCourseByTopicId(topicId);
+        const targetCourse = findCourseByTopicId(relatedId);
+        
+        if (sourceCourse && targetCourse) {
+          newLines.push({
+            from: positions[sourceCourse.id],
+            to: positions[targetCourse.id],
+            color: getRandomColor() // Implement a function to get different colors for different relationships
+          });
+        }
+      });
+    });
+    
+    setRelatedLines(newLines);
+  }, [selectedTopics, positions]);
+
+  // Helper function to find course containing a topic
+  const findCourseByTopicId = (topicId: string): Course | undefined => {
+    return courses.find(course =>
+      course.sections.some(section =>
+        section.subtopics.some(topic => topic.id === topicId)
+      )
+    );
+  };
 
   useEffect(() => {
     updateProgressPercentages();
@@ -205,6 +244,20 @@ const KnowledgeGraph = () => {
           onMouseLeave={handleMouseUp}
         >
           {renderConnections()}
+          {/* Render related topic lines */}
+          {relatedLines.map((line, index) => (
+            <line
+              key={`related-${index}`}
+              x1={line.from.x}
+              y1={line.from.y}
+              x2={line.to.x}
+              y2={line.to.y}
+              stroke={line.color}
+              strokeWidth="2"
+              strokeDasharray="4"
+              className="opacity-50"
+            />
+          ))}
           {courses.map(course => (
             <g
               key={course.id}
@@ -258,7 +311,6 @@ const KnowledgeGraph = () => {
           ))}
         </svg>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {courses.map(course => (
           <Card key={course.id} className="bg-black/50 text-white">
