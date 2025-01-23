@@ -7,7 +7,7 @@ import { Card, CardContent } from "./ui/card";
 const KnowledgeGraph = () => {
   const [completedCourses, setCompletedCourses] = useState<Set<string>>(new Set());
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
   const svgRef = useRef<SVGSVGElement>(null);
   const [dragging, setDragging] = useState<string | null>(null);
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>(
@@ -42,7 +42,13 @@ const KnowledgeGraph = () => {
   };
 
   const handleTopicClick = (topicId: string, course: Course) => {
-    setSelectedTopic(selectedTopic === topicId ? null : topicId);
+    const newSelectedTopics = new Set(selectedTopics);
+    if (selectedTopics.has(topicId)) {
+      newSelectedTopics.delete(topicId);
+    } else {
+      newSelectedTopics.add(topicId);
+    }
+    setSelectedTopics(newSelectedTopics);
     
     // Find related topics across all courses
     const relatedTopics: { courseId: string; topic: SubTopic }[] = [];
@@ -69,19 +75,38 @@ const KnowledgeGraph = () => {
 
   const getAllSubtopics = (course: Course): string[] => {
     return course.sections.flatMap(section => 
-      section.subtopics.map(topic => topic.title)
+      section.subtopics.map(topic => topic.id)
     );
   };
 
   const handleNodeClick = (course: Course) => {
     setSelectedCourse(course);
+    
+    // If course is selected, add all its subtopics to selectedTopics
+    const allSubtopics = getAllSubtopics(course);
+    const newSelectedTopics = new Set(selectedTopics);
+    
+    // Toggle all subtopics
+    const allTopicsSelected = allSubtopics.every(id => selectedTopics.has(id));
+    if (allTopicsSelected) {
+      allSubtopics.forEach(id => newSelectedTopics.delete(id));
+    } else {
+      allSubtopics.forEach(id => newSelectedTopics.add(id));
+    }
+    
+    setSelectedTopics(newSelectedTopics);
+    
     const currentProgress = progressPercentages[course.id];
     const dependencies = course.dependencies.map(depId => {
       const dep = courses.find(c => c.id === depId);
       return dep?.title;
     }).filter(Boolean).join(", ");
     
-    const subtopicsList = getAllSubtopics(course).map(topic => `• ${topic}`).join("\n");
+    const subtopicsList = course.sections
+      .flatMap(section => section.subtopics)
+      .map(topic => `• ${topic.title}`)
+      .join("\n");
+      
     const progressText = `Current Progress: ${Math.round(currentProgress)}%\n\n${dependencies ? `Prerequisites: ${dependencies}\n\n` : ''}Topics covered:\n${subtopicsList}`;
     
     toast(course.title, {
@@ -184,9 +209,9 @@ const KnowledgeGraph = () => {
                 r="40"
                 className={`${
                   completedCourses.has(course.id)
-                    ? "fill-blue-600"
-                    : "fill-blue-500"
-                } transition-colors duration-300 hover:fill-blue-400 stroke-2 stroke-blue-300`}
+                    ? "fill-graph-completed"
+                    : "fill-graph-node"
+                } transition-colors duration-300 hover:fill-graph-hover stroke-2 stroke-blue-300`}
               />
               <text
                 className="text-lg fill-white font-bold"
@@ -236,9 +261,9 @@ const KnowledgeGraph = () => {
                       <li
                         key={topic.id}
                         onClick={() => handleTopicClick(topic.id, course)}
-                        className={`cursor-pointer p-1 rounded transition-colors ${
-                          selectedTopic === topic.id || topic.relatedTopics?.includes(selectedTopic || '')
-                            ? "bg-blue-500"
+                        className={`cursor-pointer p-1 rounded transition-colors duration-300 ${
+                          selectedTopics.has(topic.id) || topic.relatedTopics?.some(id => selectedTopics.has(id))
+                            ? "bg-blue-500 transform scale-105"
                             : "hover:bg-blue-500/30"
                         }`}
                       >
