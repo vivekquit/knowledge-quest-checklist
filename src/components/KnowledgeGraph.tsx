@@ -82,7 +82,7 @@ const KnowledgeGraph = () => {
   const handleNodeClick = (course: Course) => {
     setSelectedCourse(course);
     
-    // If course is selected, add all its subtopics to selectedTopics
+    // Get all subtopics for the course
     const allSubtopics = getAllSubtopics(course);
     const newSelectedTopics = new Set(selectedTopics);
     
@@ -124,6 +124,7 @@ const KnowledgeGraph = () => {
   const toggleCompletion = (courseId: string, event: React.MouseEvent) => {
     event.stopPropagation();
     const newCompleted = new Set(completedCourses);
+    
     if (completedCourses.has(courseId)) {
       newCompleted.delete(courseId);
     } else {
