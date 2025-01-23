@@ -4,6 +4,22 @@ import { courses } from "@/data/courses";
 import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
 
+// Add the getRandomColor function
+const getRandomColor = () => {
+  const colors = [
+    '#FF6B6B',
+    '#4ECDC4',
+    '#45B7D1',
+    '#96CEB4',
+    '#FFEEAD',
+    '#D4A5A5',
+    '#9B59B6',
+    '#3498DB',
+    '#1ABC9C'
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
 const KnowledgeGraph = () => {
   const [completedCourses, setCompletedCourses] = useState<Set<string>>(new Set());
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
