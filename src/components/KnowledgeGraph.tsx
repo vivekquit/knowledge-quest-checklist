@@ -90,8 +90,14 @@ const KnowledgeGraph = () => {
     const allTopicsSelected = allSubtopics.every(id => selectedTopics.has(id));
     if (allTopicsSelected) {
       allSubtopics.forEach(id => newSelectedTopics.delete(id));
+      if (completedCourses.has(course.id)) {
+        toggleCompletion(course.id, new MouseEvent('click') as any);
+      }
     } else {
       allSubtopics.forEach(id => newSelectedTopics.add(id));
+      if (!completedCourses.has(course.id)) {
+        toggleCompletion(course.id, new MouseEvent('click') as any);
+      }
     }
     
     setSelectedTopics(newSelectedTopics);
@@ -122,16 +128,20 @@ const KnowledgeGraph = () => {
       newCompleted.delete(courseId);
     } else {
       const course = courses.find(c => c.id === courseId);
-      const missingDependencies = course?.dependencies.filter(depId => !completedCourses.has(depId));
       
-      if (missingDependencies && missingDependencies.length > 0) {
-        const missingCourses = missingDependencies
-          .map(depId => courses.find(c => c.id === depId)?.title)
-          .filter(Boolean)
-          .join(", ");
+      // Only check dependencies for CKS
+      if (courseId === 'cks') {
+        const missingDependencies = course?.dependencies.filter(depId => !completedCourses.has(depId));
         
-        toast.error(`Complete prerequisites first: ${missingCourses}`);
-        return;
+        if (missingDependencies && missingDependencies.length > 0) {
+          const missingCourses = missingDependencies
+            .map(depId => courses.find(c => c.id === depId)?.title)
+            .filter(Boolean)
+            .join(", ");
+          
+          toast.error(`Complete prerequisites first: ${missingCourses}`);
+          return;
+        }
       }
       
       newCompleted.add(courseId);
@@ -261,9 +271,9 @@ const KnowledgeGraph = () => {
                       <li
                         key={topic.id}
                         onClick={() => handleTopicClick(topic.id, course)}
-                        className={`cursor-pointer p-1 rounded transition-colors duration-300 ${
+                        className={`cursor-pointer p-1 rounded transition-all duration-300 transform ${
                           selectedTopics.has(topic.id) || topic.relatedTopics?.some(id => selectedTopics.has(id))
-                            ? "bg-blue-500 transform scale-105"
+                            ? "bg-blue-500 scale-105"
                             : "hover:bg-blue-500/30"
                         }`}
                       >
