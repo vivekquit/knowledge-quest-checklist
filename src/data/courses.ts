@@ -461,59 +461,117 @@ export const courses: Course[] = [
     }
   },
   {
-    id: "cks",
-    title: "CKS",
-    description: "Certified Kubernetes Security Specialist",
-    dependencies: ["cka"],
-    position: { x: 900, y: 100 },
-    sections: [
+    "id": "cks",
+    "title": "CKS",
+    "description": "Certified Kubernetes Security Specialist",
+    "dependencies": ["cka"],
+    "position": { "x": 900, "y": 100 },
+    "sections": [
       {
-        title: "Attack Surface",
-        subtopics: [
-          { id: "attack-surface", title: "Understanding the Kubernetes Attack Surface" },
-          { id: "4c-security", title: "The 4Cs of Cloud Native Security" }
+        "title": "Attack Surface",
+        "subtopics": [
+          { "id": "attack-surface", "title": "Understanding the Kubernetes Attack Surface" },
+          { "id": "4c-security", "title": "The 4Cs of Cloud Native Security" }
         ]
       },
       {
-        title: "Cluster Setup and Hardening",
-        subtopics: [
-          { id: "cis-bench", title: "CIS Benchmarks, Kube-bench" },
-          { id: "cks-auth", title: "Authentication, TLS, PKI, and KubeConfig" },
-          { id: "cks-rbac", title: "Authorization: RBAC, ABAC" },
-          { id: "cks-network", title: "Network Policies" },
-          { id: "cks-admission", title: "Admission Controllers" },
-          { id: "cks-docker", title: "Docker & Node Security" }
+        "title": "Cluster Setup and Hardening",
+        "subtopics": [
+          { "id": "cis-bench", "title": "CIS Benchmarks, Kube-bench" },
+          { "id": "security-primitives", "title": "Kubernetes Security Primitives" },
+          { "id": "cks-auth", "title": "Authentication, Service Accounts, TLS in Kubernetes" },
+          { "id": "pki-certificates", "title": "PKI Certificates & API" },
+          { "id": "kubeconfig", "title": "KubeConfig" },
+          { "id": "api-groups", "title": "API Groups" },
+          { "id": "cks-rbac", "title": "RBAC, Cluster Roles, ABAC" },
+          { "id": "kubelet-security", "title": "Kubelet Security" },
+          { "id": "kubectl", "title": "Kubectl Proxy & Port Forward" },
+          { "id": "k8s-dashboard", "title": "Kubernetes Dashboard" },
+          { "id": "verify-binaries", "title": "Verify Platform Binaries Before Deploying" },
+          { "id": "k8s-update", "title": "Update Kubernetes Frequently" },
+          { "id": "k8s-versions", "title": "Kubernetes Software Versions" },
+          { "id": "cluster-upgrade", "title": "Cluster Upgrade" },
+          { "id": "network-policies", "title": "Network Policies, Ingress" },
+          { "id": "docker-security", "title": "Docker Service Configuration & Securing Daemon" },
+          { "id": "node-security", "title": "Securing Node Metadata & Protection Strategies" },
+          { "id": "endpoint-security", "title": "Endpoint Security" },
+          { "id": "audit-logs", "title": "Audit Logging" }
         ]
       },
       {
-        title: "System Hardening",
-        subtopics: [
-          { id: "least-privilege", title: "Least Privilege Principle" },
-          { id: "ssh-hardening", title: "SSH Hardening, Privilege Escalation" },
-          { id: "kernel-modules", title: "Restrict Kernel Modules" },
-          { id: "security-profiles", title: "Implement Seccomp, AppArmor, SELinux" }
+        "title": "System Hardening",
+        "subtopics": [
+          { "id": "least-privilege", "title": "Least Privilege Principle" },
+          { "id": "os-footprint", "title": "Minimize Host OS Footprint" },
+          { "id": "limit-node-access", "title": "Limit Node Access" },
+          { "id": "ssh-hardening", "title": "SSH Hardening" },
+          { "id": "privilege-escalation", "title": "Privilege Escalation" },
+          { "id": "remove-packages", "title": "Remove Obsolete Packages and Services" },
+          { "id": "restrict-modules", "title": "Restrict Kernel Modules" },
+          { "id": "disable-ports", "title": "Identify and Disable Open Ports" },
+          { "id": "minimize-roles", "title": "Minimize IAM Roles" },
+          { "id": "external-network", "title": "Minimize External Access to the Network" },
+          { "id": "ufw-basics", "title": "UFW Firewall Basics" },
+          { "id": "syscalls", "title": "Linux Syscalls, AquaSec Tracee" },
+          { "id": "seccomp", "title": "Restrict Syscalls using Seccomp" },
+          { "id": "seccomp-k8s", "title": "Implement Seccomp in Kubernetes" },
+          { "id": "apparmor", "title": "AppArmor" },
+          { "id": "capabilities", "title": "Linux Capabilities" },
+          { "id": "selinux", "title": "SELinux Basics" }
         ]
       },
       {
-        title: "Supply Chain Security",
-        subtopics: [
-          { id: "sbom", title: "SBOM, KubeLinter" },
-          { id: "trivy", title: "Scan Images with Trivy" },
-          { id: "image-policy", title: "ImagePolicyWebhook" }
+        "title": "Minimize Microservice Vulnerabilities",
+        "subtopics": [
+          { "id": "security-contexts", "title": "Security Contexts" },
+          { "id": "admission-controllers", "title": "Admission Controllers" },
+          { "id": "pod-security", "title": "Pod Security" },
+          { "id": "opa", "title": "Open Policy Agent (OPA)" },
+          { "id": "secrets", "title": "Secrets" },
+          { "id": "sandboxing", "title": "Container Sandboxing" },
+          { "id": "gvisor", "title": "gVisor" },
+          { "id": "kata-containers", "title": "Kata Containers" },
+          { "id": "runtime-classes", "title": "Runtime Classes" },
+          { "id": "cri", "title": "Container Runtime Interface (CRI)" },
+          { "id": "mtls", "title": "mTLS" },
+          { "id": "multi-tenancy", "title": "Multi-Tenancy, Control Plane Isolation" },
+          { "id": "namespaces", "title": "Namespaces" },
+          { "id": "resource-quotas", "title": "Resource Quotas & Limits" },
+          { "id": "storage", "title": "Storage" },
+          { "id": "taints-tolerations", "title": "Taints and Tolerations" },
+          { "id": "qos", "title": "Quality of Service" },
+          { "id": "cilium", "title": "Cilium" }
         ]
       },
       {
-        title: "Runtime Security",
-        subtopics: [
-          { id: "audit-logs", title: "Audit Logging" },
-          { id: "falco", title: "Falco" }
+        "title": "Supply Chain Security",
+        "subtopics": [
+          { "id": "sbom", "title": "SBOM, KubeLinter" },
+          { "id": "minimize-image", "title": "Minimize Base Image Footprint" },
+          { "id": "image-security", "title": "Image Security" },
+          { "id": "image-policy", "title": "ImagePolicyWebhook" },
+          { "id": "validate-images", "title": "Sign and Validate Images" },
+          { "id": "static-analysis", "title": "Use Static Analysis of User Workloads" },
+          { "id": "trivy", "title": "Scan Images with Trivy" },
+          { "id": "artifact-security", "title": "Artifact Repository Security" }
+        ]
+      },
+      {
+        "title": "Monitoring, Logging and Runtime Security",
+        "subtopics": [
+          { "id": "behavioral-analytics", "title": "Perform Behavioral Analytics of Syscall Process" },
+          { "id": "falco", "title": "Falco" },
+          { "id": "threat-detection", "title": "Detect Threats Across Infrastructure, Apps, Networks, Data, Users, and Workloads" },
+          { "id": "attack-phases", "title": "Detect All Attack Phases, Regardless of Location or Spread" },
+          { "id": "deep-analysis", "title": "Conduct Deep Analysis to Identify Bad Actors in the Environment" },
+          { "id": "mutable-infra", "title": "Mutable vs Immutable Infrastructure" }
         ]
       }
     ],
-    certificationProgress: {
-      target: "CKS",
-      percentage: 0,
-      contributesTo: {
+    "certificationProgress": {
+      "target": "CKS",
+      "percentage": 0,
+      "contributesTo": {
         "cka": 17,
         "ckad": 25,
         "kcna": 26,
