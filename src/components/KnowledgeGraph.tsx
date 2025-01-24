@@ -416,7 +416,7 @@ const KnowledgeGraph = () => {
                         onClick={() => handleTopicClick(topic.id, course)}
                         className={`cursor-pointer p-1 rounded transition-all duration-300 transform ${
                           selectedTopics.has(topic.id) || topic.relatedTopics?.some(id => selectedTopics.has(id))
-                            ? "bg-blue-500 scale-105"
+                            ? "bg-blue-500"
                             : "hover:bg-blue-500/30"
                         }`}
                       >
