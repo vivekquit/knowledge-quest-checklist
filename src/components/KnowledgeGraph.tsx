@@ -20,8 +20,6 @@ const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// ... keep existing code (component state and helper functions)
-
 const KnowledgeGraph = () => {
   const [completedCourses, setCompletedCourses] = useState<Set<string>>(new Set());
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -301,11 +299,11 @@ const KnowledgeGraph = () => {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      <div className="w-full h-[300px] md:h-[400px] bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-xl relative overflow-hidden border border-gray-800">
+      <div className="w-full h-[600px] relative">
         <svg
           ref={svgRef}
           className="w-full h-full"
-          viewBox="0 0 800 400"
+          viewBox="-100 -100 1000 600"
           preserveAspectRatio="xMidYMid meet"
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
