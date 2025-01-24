@@ -29,7 +29,7 @@ export const courses: Course[] = [
     title: "CKA",
     description: "Certified Kubernetes Administrator",
     dependencies: [],
-    position: { x: 200, y: 200 },
+    position: { x: 100, y: 100 },
     sections: [
       {
         title: "Core Concepts",
@@ -226,7 +226,7 @@ export const courses: Course[] = [
     title: "CKAD",
     description: "Certified Kubernetes Application Developer",
     dependencies: [],
-    position: { x: 400, y: 150 },
+    position: { x: 300, y: 100 },
     sections: [
       {
         title: "Core Concepts",
@@ -345,7 +345,7 @@ export const courses: Course[] = [
     title: "KCNA",
     description: "Kubernetes and Cloud Native Associate",
     dependencies: [],
-    position: { x: 600, y: 200 },
+    position: { x: 500, y: 100 },
     sections: [
       {
         title: "Kubernetes Fundamentals",
@@ -465,7 +465,7 @@ export const courses: Course[] = [
     title: "CKS",
     description: "Certified Kubernetes Security Specialist",
     dependencies: ["cka"],
-    position: { x: 500, y: 300 },
+    position: { x: 900, y: 100 },
     sections: [
       {
         title: "Attack Surface",
@@ -526,7 +526,7 @@ export const courses: Course[] = [
     title: "KCSA",
     description: "Kubernetes and Cloud Native Security Associate",
     dependencies: [],
-    position: { x: 300, y: 300 },
+    position: { x: 700, y: 100 },
     sections: [
       {
         title: "Overview of Cloud Native Security",
