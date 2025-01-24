@@ -1,3 +1,4 @@
+<lov-code>
 import React, { useState, useRef, useEffect } from "react";
 import { Course, SubTopic, topicRelationships } from "@/data/courses";
 import { courses } from "@/data/courses";
@@ -303,6 +304,8 @@ const KnowledgeGraph = () => {
         <svg
           ref={svgRef}
           className="w-full h-full"
+          viewBox="0 0 800 400"
+          preserveAspectRatio="xMidYMid meet"
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
@@ -400,35 +403,4 @@ const KnowledgeGraph = () => {
             className="bg-gradient-to-br from-gray-900 to-black text-white border border-gray-800 hover:border-blue-500 transition-all duration-300"
           >
             <CardContent className="p-4">
-              <h3 className="text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
-                {course.title}
-              </h3>
-              {course.sections.map((section, idx) => (
-                <div key={idx} className="mb-4">
-                  <h4 className="text-lg font-semibold text-gray-300 mb-2">{section.title}</h4>
-                  <ul className="space-y-1">
-                    {section.subtopics.map(topic => (
-                      <li
-                        key={topic.id}
-                        onClick={() => handleTopicClick(topic.id, course)}
-                        className={`cursor-pointer p-1 rounded transition-all duration-300 ${
-                          selectedTopics.has(topic.id)
-                            ? "bg-blue-500 transform scale-100"
-                            : "hover:bg-blue-500/30"
-                        }`}
-                      >
-                        {topic.title}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default KnowledgeGraph;
+              <h3 className="text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from
