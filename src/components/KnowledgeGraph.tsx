@@ -341,7 +341,7 @@ const KnowledgeGraph = () => {
                 e.stopPropagation();
                 handleMouseDown(course.id);
               }}
-              className="cursor-pointer transition-transform hover:scale-105"
+              className="cursor-pointer transition-transform"
             >
               <circle
                 r="45"
