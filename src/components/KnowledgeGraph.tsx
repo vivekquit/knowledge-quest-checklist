@@ -298,8 +298,8 @@ const KnowledgeGraph = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 animate-fade-in">
-      <div className="w-full h-[300px] md:h-[400px] bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-xl relative overflow-hidden border border-gray-800">
+    <div className="flex flex-col gap-8 animate-fade-in">
+      <div className="w-full h-[500px] bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-xl relative overflow-hidden border border-gray-800">
         <svg
           ref={svgRef}
           className="w-full h-full"
@@ -307,6 +307,7 @@ const KnowledgeGraph = () => {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
+          {/* Render relationship lines with new styling */}
           {renderConnections()}
           {relatedLines.map((line, index) => (
             <g key={`related-${index}`}>
@@ -330,6 +331,7 @@ const KnowledgeGraph = () => {
             </g>
           ))}
           
+          {/* Render course nodes with enhanced styling */}
           {courses.map(course => (
             <g
               key={course.id}
@@ -339,7 +341,7 @@ const KnowledgeGraph = () => {
                 e.stopPropagation();
                 handleMouseDown(course.id);
               }}
-              className="cursor-pointer transform transition-transform duration-300 hover:scale-105"
+              className="cursor-pointer transition-transform hover:scale-105"
             >
               <circle
                 r="45"
@@ -393,6 +395,7 @@ const KnowledgeGraph = () => {
         </svg>
       </div>
 
+      {/* Course cards with enhanced styling */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {courses.map(course => (
           <Card 
@@ -411,9 +414,9 @@ const KnowledgeGraph = () => {
                       <li
                         key={topic.id}
                         onClick={() => handleTopicClick(topic.id, course)}
-                        className={`cursor-pointer p-1 rounded transition-all duration-300 ${
-                          selectedTopics.has(topic.id)
-                            ? "bg-blue-500 transform scale-100"
+                        className={`cursor-pointer p-1 rounded transition-all duration-300 transform ${
+                          selectedTopics.has(topic.id) || topic.relatedTopics?.some(id => selectedTopics.has(id))
+                            ? "bg-blue-500 scale-105"
                             : "hover:bg-blue-500/30"
                         }`}
                       >
