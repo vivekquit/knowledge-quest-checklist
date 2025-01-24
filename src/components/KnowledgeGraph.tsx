@@ -299,7 +299,7 @@ const KnowledgeGraph = () => {
 
   return (
     <div className="flex flex-col gap-8 animate-fade-in">
-      <div className="w-full h-[500px] bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-xl relative overflow-hidden border border-gray-800">
+      <div className="w-full bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-xl relative overflow-hidden border border-gray-800">
         <svg
           ref={svgRef}
           className="w-full h-full"
