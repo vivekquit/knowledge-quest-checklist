@@ -44,20 +44,31 @@ const KnowledgeGraph = () => {
     const newLines: Array<{ from: { x: number; y: number }; to: { x: number; y: number }; color: string }> = [];
     
     selectedTopics.forEach(topicId => {
-      const relatedTopicIds = topicRelationships[topicId] || [];
-      relatedTopicIds.forEach(relatedId => {
-        // Find courses containing these topics
-        const sourceCourse = findCourseByTopicId(topicId);
-        const targetCourse = findCourseByTopicId(relatedId);
+      const selectedCourse = courses.find(c => 
+        c.sections.some(s => s.subtopics.some(t => t.id === topicId))
+      );
+      
+      if (selectedCourse) {
+        const selectedTopicTitle = selectedCourse.sections.find(s => 
+          s.subtopics.find(t => t.id === topicId)
+        )?.subtopics.find(t => t.id === topicId)?.title;
         
-        if (sourceCourse && targetCourse) {
-          newLines.push({
-            from: positions[sourceCourse.id],
-            to: positions[targetCourse.id],
-            color: getRandomColor() // Implement a function to get different colors for different relationships
-          });
-        }
-      });
+        courses.forEach(targetCourse => {
+          if (targetCourse.id !== selectedCourse.id) {
+            const hasMatchingTopic = targetCourse.sections.some(s => 
+              s.subtopics.some(t => t.title === selectedTopicTitle)
+            );
+            
+            if (hasMatchingTopic) {
+              newLines.push({
+                from: positions[selectedCourse.id],
+                to: positions[targetCourse.id],
+                color: getRandomColor()
+              });
+            }
+          }
+        });
+      }
     });
     
     setRelatedLines(newLines);
@@ -102,27 +113,59 @@ const KnowledgeGraph = () => {
   };
 
   const handleTopicClick = (topicId: string, course: Course) => {
+    console.log('Topic clicked:', topicId);
     const newSelectedTopics = new Set(selectedTopics);
+    
     if (selectedTopics.has(topicId)) {
       newSelectedTopics.delete(topicId);
+      
+      // Find and deselect related topics
+      courses.forEach(c => {
+        c.sections.forEach(section => {
+          section.subtopics.forEach(topic => {
+            if (topic.title === course.sections.find(s => 
+              s.subtopics.find(st => st.id === topicId)
+            )?.subtopics.find(st => st.id === topicId)?.title) {
+              newSelectedTopics.delete(topic.id);
+            }
+          });
+        });
+      });
     } else {
       newSelectedTopics.add(topicId);
+      
+      // Find and select related topics by title
+      const selectedTopicTitle = course.sections.find(s => 
+        s.subtopics.find(st => st.id === topicId)
+      )?.subtopics.find(st => st.id === topicId)?.title;
+      
+      courses.forEach(c => {
+        c.sections.forEach(section => {
+          section.subtopics.forEach(topic => {
+            if (topic.title === selectedTopicTitle) {
+              newSelectedTopics.add(topic.id);
+            }
+          });
+        });
+      });
     }
+    
     setSelectedTopics(newSelectedTopics);
     
-    // Find related topics across all courses
+    // Show toast with related topics
     const relatedTopics: { courseId: string; topic: SubTopic }[] = [];
     courses.forEach(c => {
       c.sections.forEach(section => {
         section.subtopics.forEach(topic => {
-          if (topic.relatedTopics?.includes(topicId) || topic.id === topicId) {
+          if (topic.title === course.sections.find(s => 
+            s.subtopics.find(st => st.id === topicId)
+          )?.subtopics.find(st => st.id === topicId)?.title) {
             relatedTopics.push({ courseId: c.id, topic });
           }
         });
       });
     });
 
-    // Show toast with related topics
     if (relatedTopics.length > 1) {
       toast(`Related topics found in ${relatedTopics.length} courses`, {
         description: relatedTopics.map(rt => 
@@ -373,7 +416,7 @@ const KnowledgeGraph = () => {
                         onClick={() => handleTopicClick(topic.id, course)}
                         className={`cursor-pointer p-1 rounded transition-all duration-300 transform ${
                           selectedTopics.has(topic.id) || topic.relatedTopics?.some(id => selectedTopics.has(id))
-                            ? "bg-blue-500"
+                            ? "bg-blue-500 scale-105"
                             : "hover:bg-blue-500/30"
                         }`}
                       >
