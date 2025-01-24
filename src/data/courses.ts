@@ -333,7 +333,10 @@ export const courses: Course[] = [
       target: "CKAD",
       percentage: 0,
       contributesTo: {
-        "cks": 20
+        "cka": 33,
+        "kcna": 36,
+        "cks": 18,
+        "kcsa": 21
       }
     }
   },
@@ -450,9 +453,10 @@ export const courses: Course[] = [
       target: "KCNA",
       percentage: 0,
       contributesTo: {
-        "ckad": 30,
-        "cks": 20,
-        "kcsa": 40
+        "cka": 37,
+        "ckad": 42,
+        "cks": 22,
+        "kcsa": 27
       }
     }
   },
@@ -508,7 +512,13 @@ export const courses: Course[] = [
     ],
     certificationProgress: {
       target: "CKS",
-      percentage: 0
+      percentage: 0,
+      contributesTo: {
+        "cka": 17,
+        "ckad": 25,
+        "kcna": 26,
+        "kcsa": 54
+      }
     }
   },
   {
@@ -599,7 +609,13 @@ export const courses: Course[] = [
     ],
     certificationProgress: {
       target: "KCSA",
-      percentage: 0
+      percentage: 0,
+      contributesTo: {
+        "cka": 15,
+        "ckad": 17,
+        "kcna": 19,
+        "cks": 32
+      }
     }
   }
 ];

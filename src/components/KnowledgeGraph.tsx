@@ -44,20 +44,31 @@ const KnowledgeGraph = () => {
     const newLines: Array<{ from: { x: number; y: number }; to: { x: number; y: number }; color: string }> = [];
     
     selectedTopics.forEach(topicId => {
-      const relatedTopicIds = topicRelationships[topicId] || [];
-      relatedTopicIds.forEach(relatedId => {
-        // Find courses containing these topics
-        const sourceCourse = findCourseByTopicId(topicId);
-        const targetCourse = findCourseByTopicId(relatedId);
+      const selectedCourse = courses.find(c => 
+        c.sections.some(s => s.subtopics.some(t => t.id === topicId))
+      );
+      
+      if (selectedCourse) {
+        const selectedTopicTitle = selectedCourse.sections.find(s => 
+          s.subtopics.find(t => t.id === topicId)
+        )?.subtopics.find(t => t.id === topicId)?.title;
         
-        if (sourceCourse && targetCourse) {
-          newLines.push({
-            from: positions[sourceCourse.id],
-            to: positions[targetCourse.id],
-            color: getRandomColor() // Implement a function to get different colors for different relationships
-          });
-        }
-      });
+        courses.forEach(targetCourse => {
+          if (targetCourse.id !== selectedCourse.id) {
+            const hasMatchingTopic = targetCourse.sections.some(s => 
+              s.subtopics.some(t => t.title === selectedTopicTitle)
+            );
+            
+            if (hasMatchingTopic) {
+              newLines.push({
+                from: positions[selectedCourse.id],
+                to: positions[targetCourse.id],
+                color: getRandomColor()
+              });
+            }
+          }
+        });
+      }
     });
     
     setRelatedLines(newLines);
@@ -93,31 +104,68 @@ const KnowledgeGraph = () => {
       newPercentages[completedId] = 100;
     });
 
+    // Ensure progress doesn't exceed 100%
+    Object.keys(newPercentages).forEach(key => {
+      newPercentages[key] = Math.min(newPercentages[key], 100);
+    });
+
     setProgressPercentages(newPercentages);
   };
 
   const handleTopicClick = (topicId: string, course: Course) => {
+    console.log('Topic clicked:', topicId);
     const newSelectedTopics = new Set(selectedTopics);
+    
     if (selectedTopics.has(topicId)) {
       newSelectedTopics.delete(topicId);
+      
+      // Find and deselect related topics
+      courses.forEach(c => {
+        c.sections.forEach(section => {
+          section.subtopics.forEach(topic => {
+            if (topic.title === course.sections.find(s => 
+              s.subtopics.find(st => st.id === topicId)
+            )?.subtopics.find(st => st.id === topicId)?.title) {
+              newSelectedTopics.delete(topic.id);
+            }
+          });
+        });
+      });
     } else {
       newSelectedTopics.add(topicId);
+      
+      // Find and select related topics by title
+      const selectedTopicTitle = course.sections.find(s => 
+        s.subtopics.find(st => st.id === topicId)
+      )?.subtopics.find(st => st.id === topicId)?.title;
+      
+      courses.forEach(c => {
+        c.sections.forEach(section => {
+          section.subtopics.forEach(topic => {
+            if (topic.title === selectedTopicTitle) {
+              newSelectedTopics.add(topic.id);
+            }
+          });
+        });
+      });
     }
+    
     setSelectedTopics(newSelectedTopics);
     
-    // Find related topics across all courses
+    // Show toast with related topics
     const relatedTopics: { courseId: string; topic: SubTopic }[] = [];
     courses.forEach(c => {
       c.sections.forEach(section => {
         section.subtopics.forEach(topic => {
-          if (topic.relatedTopics?.includes(topicId) || topic.id === topicId) {
+          if (topic.title === course.sections.find(s => 
+            s.subtopics.find(st => st.id === topicId)
+          )?.subtopics.find(st => st.id === topicId)?.title) {
             relatedTopics.push({ courseId: c.id, topic });
           }
         });
       });
     });
 
-    // Show toast with related topics
     if (relatedTopics.length > 1) {
       toast(`Related topics found in ${relatedTopics.length} courses`, {
         description: relatedTopics.map(rt => 
@@ -250,8 +298,8 @@ const KnowledgeGraph = () => {
   };
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="w-full h-[400px] bg-black rounded-lg shadow-inner relative overflow-hidden">
+    <div className="flex flex-col gap-8 animate-fade-in">
+      <div className="w-full h-[500px] bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-xl relative overflow-hidden border border-gray-800">
         <svg
           ref={svgRef}
           className="w-full h-full"
@@ -259,21 +307,31 @@ const KnowledgeGraph = () => {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
+          {/* Render relationship lines with new styling */}
           {renderConnections()}
-          {/* Render related topic lines */}
           {relatedLines.map((line, index) => (
-            <line
-              key={`related-${index}`}
-              x1={line.from.x}
-              y1={line.from.y}
-              x2={line.to.x}
-              y2={line.to.y}
-              stroke={line.color}
-              strokeWidth="2"
-              strokeDasharray="4"
-              className="opacity-50"
-            />
+            <g key={`related-${index}`}>
+              <line
+                x1={line.from.x}
+                y1={line.from.y}
+                x2={line.to.x}
+                y2={line.to.y}
+                stroke={line.color}
+                strokeWidth="2"
+                strokeDasharray="4"
+                className="opacity-50"
+              />
+              <circle
+                cx={(line.from.x + line.to.x) / 2}
+                cy={(line.from.y + line.to.y) / 2}
+                r="3"
+                fill={line.color}
+                className="animate-pulse"
+              />
+            </g>
           ))}
+          
+          {/* Render course nodes with enhanced styling */}
           {courses.map(course => (
             <g
               key={course.id}
@@ -283,30 +341,39 @@ const KnowledgeGraph = () => {
                 e.stopPropagation();
                 handleMouseDown(course.id);
               }}
-              className="cursor-pointer"
+              className="cursor-pointer transition-transform hover:scale-105"
             >
               <circle
-                r="40"
+                r="45"
                 className={`${
                   completedCourses.has(course.id)
                     ? "fill-graph-completed"
                     : "fill-graph-node"
-                } transition-colors duration-300 hover:fill-graph-hover stroke-2 stroke-blue-300`}
+                } transition-all duration-300 hover:fill-graph-hover stroke-2 stroke-blue-300`}
               />
               <text
-                className="text-lg fill-white font-bold"
+                className="text-xl fill-white font-bold"
                 textAnchor="middle"
-                dy="-5"
+                dy="-10"
               >
                 {course.title}
               </text>
               <text
-                className="text-xs fill-gray-300"
+                className="text-sm fill-gray-300"
                 textAnchor="middle"
                 dy="15"
               >
                 {Math.round(progressPercentages[course.id])}%
               </text>
+              {course.id === "cks" && (
+                <text
+                  className="text-xs fill-red-500"
+                  textAnchor="middle"
+                  dy="30"
+                >
+                  Requires CKA
+                </text>
+              )}
               <foreignObject
                 x="-12"
                 y="20"
@@ -327,11 +394,18 @@ const KnowledgeGraph = () => {
           ))}
         </svg>
       </div>
+
+      {/* Course cards with enhanced styling */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {courses.map(course => (
-          <Card key={course.id} className="bg-black/50 text-white">
+          <Card 
+            key={course.id} 
+            className="bg-gradient-to-br from-gray-900 to-black text-white border border-gray-800 hover:border-blue-500 transition-all duration-300"
+          >
             <CardContent className="p-4">
-              <h3 className="text-xl font-bold mb-4">{course.title}</h3>
+              <h3 className="text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+                {course.title}
+              </h3>
               {course.sections.map((section, idx) => (
                 <div key={idx} className="mb-4">
                   <h4 className="text-lg font-semibold text-gray-300 mb-2">{section.title}</h4>
